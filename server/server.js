@@ -21,11 +21,23 @@ app.post('/todos',(req,res)=>{
     .then((doc)=>{
         res.send(doc);
     },(err)=>{
-        res.send(err);
+        res.status(400).send(err);
     })
 })
 
 
+//Get todos /GET
+app.get('/todos',(req,res)=>{
+    Todo.find().then((doc)=>{
+        res.status(200).send(doc);
+    },(err)=>{
+        res.status(400).send(err);
+    })
+})
+
 app.listen(3000,()=>{
     console.log('Server on port 3000!');
 })
+
+
+module.exports={app}
