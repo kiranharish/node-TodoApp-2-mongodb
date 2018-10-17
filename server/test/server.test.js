@@ -1,12 +1,19 @@
 const expect = require('expect');
 const request = require('supertest');
-
+const {ObjectID}=require('mongodb')
 const {app} = require('./../server.js');
 
 const {Todo}= require('./../models/todo');
+var randomObjId=new ObjectID();
 
 //before test begins
-const todos=[{text:'say hello to friend'},{text:'say good bye when you leave'}]
+const todos=[{
+    _id:new ObjectID(),
+    text:'1st test text'
+},{
+    _id:new ObjectID(),
+    text:'2nd test text'
+}]
 
 beforeEach((done)=>{
     Todo.remove().then(()=>{
@@ -61,7 +68,7 @@ describe('POST /',()=>{
 
 })
 
-describe("/GET request",()=>{
+describe("GET /todos request",()=>{
     it('should Get the todos form data base',(done)=>{
         request(app)
         .get('/todos')
@@ -69,6 +76,34 @@ describe("/GET request",()=>{
         .expect((res)=>{
             expect(res.body.todos.length).toBe(2)
         })
+        .end(done)
+    })
+})
+
+describe('GET /todo/:id',()=>{
+    it("should get the todo of specified id",(done)=>{
+        request(app)
+        .get(`/todos/${todos[0]._id.toHexString()}`)
+        .expect(200)
+        .expect((res)=>{
+            
+            expect(res.body.todo.text).toBe(todos[0].text)
+        })
+        .end(done)
+        
+    })
+
+    it('should return 404 invalid objectId',(done)=>{
+        request(app)
+        .get('/todos/123')
+        .expect(404)
+        .end(done)
+    })
+
+    it("should return 404 for todo not found",(done)=>{
+        request(app)
+        .get(`/todos/${randomObjId.toHexString()}`)
+        .expect(404)
         .end(done)
     })
 })

@@ -18,7 +18,7 @@ const {User} = require('../server/models/user')
 //     console.log("doc is saved to database")
 // })
 
-const id = "5bc37bc871ce5c0d7895e526"
+const id = "5bc37bc871ce5c0d7895e526" 
 
 User.findById({_id:id}).then((doc=>{
     if(!doc)
