@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser=require('body-parser');
 const {ObjectId} = require('mongoose').Types;
+const _= require("lodash")
 
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require ('./models/todo');
@@ -70,6 +71,33 @@ app.delete('/todos/:id',(req,res)=>{
     }).catch((e)=>res.status(400).send(e))
 })
 
+
+app.patch('/todos/:id',(req,res)=>{
+    var id = req.params.id
+    var body = _.pick(req.body,["text","completed"])
+    // console.log(body.completed);
+
+    if(!ObjectId.isValid(id)) return res.status(404).send();
+    
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime();
+    }
+    else{
+        body.completed = false;
+        body.completedAt = null;
+    }
+    
+        Todo.findOneAndUpdate(
+            {_id:req.params.id},
+            {$set:body},
+            {new:true},
+            ).then((todo)=>{
+                if(todo) res.send({todo})
+                else res.statusCode(404).send()
+            }).catch((e)=> res.status(400).send(e))
+    
+     
+})
 
 
 app.listen(port,()=>{
