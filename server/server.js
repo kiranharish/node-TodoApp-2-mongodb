@@ -43,7 +43,7 @@ app.get('/todos/:id',(req,res)=>{
     var id= req.params.id;
 
     if(!ObjectId.isValid(id))
-        res.status(404).send("invalid Id") 
+        return res.status(404).send("invalid Id") 
 
 
     Todo.findById(id).then((todo)=>{
@@ -92,8 +92,8 @@ app.patch('/todos/:id',(req,res)=>{
             {$set:body},
             {new:true},
             ).then((todo)=>{
-                if(todo) res.send({todo})
-                else res.statusCode(404).send()
+                if(todo) res.status(200).send({todo})
+                else res.status(404).send()
             }).catch((e)=> res.status(400).send(e))
     
      
